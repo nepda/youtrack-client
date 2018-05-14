@@ -266,6 +266,7 @@ class Connection
         ) {
             $url = $this->base_url . $url;
         }
+        $url = $this->encodeUrlString($url);
         $this->http = curl_init($url);
         $headers = $this->headers;
 
@@ -2152,5 +2153,18 @@ class Connection
     public function getCurrentUser()
     {
         return new CurrentUser($this->get('/user/current'), $this);
+    }
+
+    /**
+     * Encode all invalid characters
+     *
+     * @param $url
+     * @return mixed
+     */
+    private function encodeUrlString($url)
+    {
+        $returnUrl = str_replace ( ' ', '%20', $url);
+
+        return $returnUrl;
     }
 }
