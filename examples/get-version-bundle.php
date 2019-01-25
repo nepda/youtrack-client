@@ -9,7 +9,7 @@ $youtrack = new YouTrack\Connection(
 );
 
 $projectId = 'Sandbox';
-$fieldName = 'Milestone';
+$fieldName = $argv[1] ?? 'Milestone';
 
 $customField = $youtrack->getProjectCustomField($projectId, $fieldName);
 
