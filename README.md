@@ -34,22 +34,26 @@ Please look into
 [the YouTrack documentation](https://www.jetbrains.com/help/youtrack/incloud/Log-in-to-YouTrack.html) on how
 to create such a permanent token.
 
-    <?php
-    require_once("YouTrack/Connection.php");
-    $youtrack = new \YouTrack\Connection("http://example.com", "perm:*****", null);
-    $issue = $youtrack->getIssue("TEST-1");
-    ...
+```php
+<?php
+require_once("YouTrack/Connection.php");
+$youtrack = new \YouTrack\Connection("http://example.com", "perm:*****", null);
+$issue = $youtrack->getIssue("TEST-1");
+...
+```
 
 The `$password` parameter has to be `null` for permanent token login. This feature is dirty and will be fixed in version
 2.*.
 
 ### With deprecated username/password login
 
-    <?php
-    require_once("YouTrack/Connection.php");
-    $youtrack = new \YouTrack\Connection("http://example.com", "login", "password");
-    $issue = $youtrack->getIssue("TEST-1");
-    ...
+```php
+<?php
+require_once("YouTrack/Connection.php");
+$youtrack = new \YouTrack\Connection("http://example.com", "login", "password");
+$issue = $youtrack->getIssue("TEST-1");
+...
+```
 
 See `./examples` folder for more usage examples.
 
@@ -57,78 +61,86 @@ See `./examples` folder for more usage examples.
 
 In your /init_autoloader.php
 
-    <?php
-    // ... snip
-    if ($zf2Path) {
-        if (isset($loader)) {
-            $loader->add('Zend', $zf2Path);
-        } else {
-            include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-            Zend\Loader\AutoloaderFactory::factory(array(
-                'Zend\Loader\StandardAutoloader' => array(
-                    'autoregister_zf' => true,
-                    'namespaces' => [                            // add this
-                        'YouTrack' => 'vendor/YouTrack'          // ...
-                    ],                                           // ...
-                )
-            ));
-        }
+```php
+<?php
+// ... snip
+if ($zf2Path) {
+    if (isset($loader)) {
+        $loader->add('Zend', $zf2Path);
+    } else {
+        include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+        Zend\Loader\AutoloaderFactory::factory(array(
+            'Zend\Loader\StandardAutoloader' => array(
+                'autoregister_zf' => true,
+                'namespaces' => [                            // add this
+                    'YouTrack' => 'vendor/YouTrack'          // ...
+                ],                                           // ...
+            )
+        ));
     }
-    // ... snip
+}
+// ... snip
+```
 
 From now on you can use YouTrack-Client-PHP-Library from any file in you ZF2-App.
 
-    <?php
-    // ...
-    // example
-    use YouTrack\Connection as YouTrackConnection;
+```php
+<?php
+// ...
+// example
+use YouTrack\Connection as YouTrackConnection;
 
-    class ExampleController extends AbstractActionController
+class ExampleController extends AbstractActionController
+{
+
+    public function anyAction()
     {
-
-        public function anyAction()
-        {
-            $youtrack = new YouTrackConnection("http://example.com", "login", "password");
-            $issue = $youtrack->getIssue("TEST-1");
-            // ...
-        }
+        $youtrack = new YouTrackConnection("http://example.com", "login", "password");
+        $issue = $youtrack->getIssue("TEST-1");
+        // ...
     }
+}
+```
 
 ## Standalone setup with composer
 
 Run the following commands to install composer and youtrack-client.
 
-    mkdir my-youtrack-project
-    cd my-youtrack-project
+```sh
+mkdir my-youtrack-project
+cd my-youtrack-project
 
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    php -r "if (hash_file('SHA384', 'composer-setup.php') === '55d6ead61b29c7bdee5cccfb50076874187bd9f21f65d8991d46ec5cc90518f447387fb9f76ebae1fbbacf329e583e30') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-    php composer-setup.php
-    php -r "unlink('composer-setup.php');"
-    
-    php composer.phar require nepda/youtrack-client
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '55d6ead61b29c7bdee5cccfb50076874187bd9f21f65d8991d46ec5cc90518f447387fb9f76ebae1fbbacf329e583e30') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+php composer.phar require nepda/youtrack-client
+```
 (Please checkout the [latest composer setup on their page](https://getcomposer.org/download/))
 
 Create a `./my-youtrack-project/client.php` file with content:
 
-    <?php
-    define('YOUTRACK_URL', 'https://*your-url*.myjetbrains.com/youtrack');
-    define('YOUTRACK_USERNAME', '***');
-    define('YOUTRACK_PASSWORD', '***');
-    require_once 'vendor/autoload.php';
-    try {
-        $youtrack = new YouTrack\Connection(
-            YOUTRACK_URL,
-            YOUTRACK_USERNAME . 'invalid',
-            YOUTRACK_PASSWORD
-        );
-        echo 'Login correct.' . PHP_EOL;
-        
-        $issue = $youtrack->getIssue('TEST-123');
-        // Now you can work with the issue or other $youtrack methods
-    } catch (\YouTrack\IncorrectLoginException $e) {
-        echo 'Incorrect login or password.' . PHP_EOL;
-    }
+```php
+<?php
+define('YOUTRACK_URL', 'https://*your-url*.myjetbrains.com/youtrack');
+define('YOUTRACK_USERNAME', '***');
+define('YOUTRACK_PASSWORD', '***');
+require_once 'vendor/autoload.php';
+try {
+    $youtrack = new YouTrack\Connection(
+        YOUTRACK_URL,
+        YOUTRACK_USERNAME . 'invalid',
+        YOUTRACK_PASSWORD
+    );
+    echo 'Login correct.' . PHP_EOL;
+
+    $issue = $youtrack->getIssue('TEST-123');
+    // Now you can work with the issue or other $youtrack methods
+} catch (\YouTrack\IncorrectLoginException $e) {
+    echo 'Incorrect login or password.' . PHP_EOL;
+}
+```
 
 With this simple setup you're ready to go.
 
@@ -136,14 +148,16 @@ With this simple setup you're ready to go.
 
 The testsuite depends on PHPUnit. You can install it with `composer.phar`:
 
-    curl -sS https://getcomposer.org/installer | php --
-    php composer.phar install
-
+```sh
+curl -sS https://getcomposer.org/installer | php --
+php composer.phar install
+```
 
 The unit tests are incomplete but you can run them using `phpunit` like this:
 
-    ./vendor/bin/phpunit ./test
-
+```sh
+./vendor/bin/phpunit ./test
+```
 
 ## Contributors
 
