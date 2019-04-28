@@ -45,6 +45,10 @@ class BaseObject implements \Iterator
         if (!empty($this->attributes[$name])) {
             return $name;
         }
+        $name = str_replace( '_', " ", $oName);
+        if (!empty($this->attributes[$name])) {
+            return $name;
+        }
         return $oName;
     }
 
