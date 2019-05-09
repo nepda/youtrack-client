@@ -1,32 +1,34 @@
 {
-    "name": "nepda/youtrack-client",
-    "description": "A PHP YouTrack client library",
-    "license": "BSD-4-Clause",
-    "authors": [
-        {
-            "name": "Nepomuk Fraedrich",
-            "email": "info@nepda.eu"
-        },
-        {
-            "name": "Sergey Susikov",
-            "email": "sergey.susikov@coldbrainweb.com"
-        }
-    ],
-    "autoload": {
-        "psr-0": {
-            "YouTrack\\": "./"
-        }
+  "name": "nepda/youtrack-client",
+  "description": "A PHP YouTrack client library",
+  "license": "BSD-4-Clause",
+  "authors": [
+    {
+      "name": "Nepomuk Fraedrich",
+      "email": "info@nepda.eu"
     },
-    "require": {
-        "php": ">=5.4",
-        "ext-json": ">=1",
-        "lib-curl": ">=7"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "5.*",
-        "phpunit/php-invoker": "*",
-        "phpunit/dbunit": ">=1.2",
-        "phpunit/phpunit-selenium": ">=1.2",
-        "phpunit/phpunit-story": "*"
+    {
+      "name": "Sergey Susikov",
+      "email": "sergey.susikov@coldbrainweb.com"
     }
+  ],
+  "autoload": {
+    "psr-0": {
+      "YouTrack\\": "./"
+    }
+  },
+  "require": {
+    "php": ">=5.4",
+    "ext-json": ">=1",
+    "lib-curl": ">=7",
+    "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.*",
+    "phpunit/php-invoker": "*",
+    "phpunit/dbunit": ">=1.2",
+    "phpunit/phpunit-selenium": ">=1.2",
+    "phpunit/phpunit-story": "*",
+    "vimeo/psalm": "^3.2"
+  }
 }

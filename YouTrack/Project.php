@@ -1,5 +1,8 @@
 <?php
+
 namespace YouTrack;
+
+use SimpleXMLElement;
 
 /**
  * A class describing a youtrack project.
@@ -26,10 +29,10 @@ class Project extends BaseObject
     /**
      * This extra constructor sets subsystems, if they are present in the response
      *
-     * @param \SimpleXMLElement $xml
+     * @param SimpleXMLElement $xml
      * @param Connection $youtrack
      */
-    public function __construct(\SimpleXMLElement $xml = null, Connection $youtrack = null)
+    public function __construct(SimpleXMLElement $xml = null, Connection $youtrack = null)
     {
         parent::__construct($xml, $youtrack);
 

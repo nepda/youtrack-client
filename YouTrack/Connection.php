@@ -2,6 +2,8 @@
 
 namespace YouTrack;
 
+use SimpleXMLElement;
+
 /**
  * A class for connecting to a YouTrack instance.
  *
@@ -9,7 +11,7 @@ namespace YouTrack;
  * @author Nepomuk Fraedrich <info@nepda.eu>
  * Created at: 29.03.11 16:13
  *
- * @see https://www.jetbrains.com/help/youtrack/incloud/YouTrack-REST-API-Reference.html
+ * @see https://www.jetbrains.com/help/youtrack/incloud/General-REST-API.html
  */
 class Connection
 {
@@ -159,7 +161,7 @@ class Connection
     {
         $this->headers[CURLOPT_HTTPHEADER] = [
             'Cache-Control: no-cache',
-            sprintf('Authorization: Bearer %s', $token)
+            sprintf('Authorization: Bearer %s', $token),
         ];
     }
 
@@ -167,11 +169,11 @@ class Connection
      * Tries to log in with provided credentials (username, password). If login is successful, then cookies are saved
      * in $cookies attribute, if not, exception is thrown.
      *
-     * @deprecated Use the tokenLogin method
-     * @see tokenLogin
      * @param string $password YouTrack password
      * @param string $username YouTrack username
      * @throws Exception
+     * @see tokenLogin
+     * @deprecated Use the tokenLogin method
      */
     protected function login($username, $password)
     {
@@ -183,7 +185,9 @@ class Connection
         curl_setopt(
             $this->http,
             CURLOPT_URL,
-            $this->base_url . '/user/login?login=' . $this->encodeUrlPart($username) . '&password=' . $this->encodeUrlPart(
+            $this->base_url . '/user/login?login=' . $this->encodeUrlPart(
+                $username
+            ) . '&password=' . $this->encodeUrlPart(
                 $password
             )
         );
@@ -229,7 +233,7 @@ class Connection
             throw new Exception('/user/login', $response, $content);
         }
         $cookies = [];
-        preg_match_all('/^Set-Cookie: (.*?)=(.*?)$/sm', $content, $cookies, PREG_SET_ORDER);
+        preg_match_all('/^Set-Cookie: (.*?)=(.*?)$/smi', $content, $cookies, PREG_SET_ORDER);
         foreach ($cookies as $cookie) {
             $parts = parse_url($cookie[0]);
             $this->cookies[] = $parts['path'];
@@ -399,13 +403,13 @@ class Connection
     /**
      * @param string $content
      *
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     private function parseXML($content)
     {
         libxml_use_internal_errors(true);
         $xml = simplexml_load_string($content);
-        if ($xml instanceof \SimpleXMLElement) {
+        if ($xml instanceof SimpleXMLElement) {
             return $xml;
         }
         /** @var \LibXMLError[] $errors */
@@ -425,7 +429,7 @@ class Connection
      * @param string $url
      * @param string|array $body If this is an array, it will be used as CURLOPT_POSTFIELDS
      * @param int $ignore_status
-     * @return \SimpleXMLElement|string
+     * @return SimpleXMLElement|string
      * @throws Exception
      * @throws \Exception
      */
@@ -460,7 +464,7 @@ class Connection
 
     /**
      * @param string $url
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     protected function get($url)
     {
@@ -469,7 +473,7 @@ class Connection
 
     /**
      * @param string $url
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     protected function put($url)
     {
@@ -595,7 +599,10 @@ class Connection
      */
     public function updateIssueSummary($id, $summary)
     {
-        $r = $this->request('POST', '/issue/' . $this->encodeUrlPart($id) . '?summary=' . $this->encodeUrlPart($summary));
+        $r = $this->request(
+            'POST',
+            '/issue/' . $this->encodeUrlPart($id) . '?summary=' . $this->encodeUrlPart($summary)
+        );
         return $r['content'];
     }
 
@@ -628,8 +635,8 @@ class Connection
         $projects = [];
 
         foreach ($xml->children() as $node) {
-            /** @var \SimpleXMLElement $node */
-            $project = new Project(new \SimpleXMLElement($node->asXML()), $this);
+            /** @var SimpleXMLElement $node */
+            $project = new Project(new SimpleXMLElement($node->asXML()), $this);
             $projects[] = $project;
         }
         return $projects;
@@ -661,7 +668,7 @@ class Connection
      */
     public function createComment($issueId, $text)
     {
-        return $this->executeCommand($issueId, '', $text);
+        return $this->executeCommand($issueId, ' ', $text);
     }
 
     /**
@@ -885,7 +892,7 @@ class Connection
         $links = [];
         $xml = $this->requestXml('GET', '/issue/' . $this->encodeUrlPart($issueId) . '/link');
         foreach ($xml->children() as $node) {
-            /** @var \SimpleXMLElement $node */
+            /** @var SimpleXMLElement $node */
             if (($node->attributes()->source != $issueId) || !$outward_only) {
                 $links[] = new Link($node, $this);
             }
@@ -917,7 +924,7 @@ class Connection
      * @param string $full_name
      * @param string $email
      * @param string $jabber
-     * @return \SimpleXMLElement|void
+     * @return SimpleXMLElement|void
      */
     public function createUserDetailed($login, $full_name, $email, $jabber)
     {
@@ -926,7 +933,7 @@ class Connection
 
     /**
      * @param array $users
-     * @return \SimpleXMLElement|void
+     * @return SimpleXMLElement|void
      */
     public function importUsers($users)
     {
@@ -954,7 +961,7 @@ class Connection
      * @link https://www.jetbrains.com/help/youtrack/incloud/Import-Links.html
      *
      * @param array[] $links
-     * @return \SimpleXMLElement|string|bool
+     * @return SimpleXMLElement|string|bool
      */
     public function importLinks(array $links)
     {
@@ -976,7 +983,7 @@ class Connection
     /**
      * @param string $project_id
      * @param array[] $issues
-     * @return bool|\SimpleXMLElement|string
+     * @return bool|SimpleXMLElement|string
      * @throws Exception
      */
     public function importIssues($project_id, $issues)
@@ -1026,8 +1033,8 @@ class Connection
         $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/assignee/group');
         $groups = [];
         foreach ($xml->children() as $group) {
-            /** @var \SimpleXMLElement $group */
-            $groups[] = new Group(new \SimpleXMLElement($group->asXML()), $this);
+            /** @var SimpleXMLElement $group */
+            $groups[] = new Group(new SimpleXMLElement($group->asXML()), $this);
         }
         return $groups;
     }
@@ -1050,8 +1057,8 @@ class Connection
         $xml = $this->get('/admin/user/' . $this->encodeUrlPart($login) . '/group');
         $groups = [];
         foreach ($xml->children() as $group) {
-            /** @var \SimpleXMLElement $group */
-            $groups[] = new Group(new \SimpleXMLElement($group->asXML()), $this);
+            /** @var SimpleXMLElement $group */
+            $groups[] = new Group(new SimpleXMLElement($group->asXML()), $this);
         }
         return $groups;
     }
@@ -1065,7 +1072,10 @@ class Connection
      */
     public function setUserGroup($login, $group_name)
     {
-        $r = $this->request('POST', '/admin/user/' . $this->encodeUrlPart($login) . '/group/' . $this->encodeUrlPart($group_name));
+        $r = $this->request(
+            'POST',
+            '/admin/user/' . $this->encodeUrlPart($login) . '/group/' . $this->encodeUrlPart($group_name)
+        );
         return $r['response'];
     }
 
@@ -1075,7 +1085,9 @@ class Connection
      */
     public function createGroup(Group $group)
     {
-        $r = $this->put('/admin/group/' . $this->encodeUrlPart($group->name) . '?description=noDescription&autoJoin=false');
+        $r = $this->put(
+            '/admin/group/' . $this->encodeUrlPart($group->name) . '?description=noDescription&autoJoin=false'
+        );
         return $r['response'];
     }
 
@@ -1097,8 +1109,8 @@ class Connection
         $xml = $this->get('/admin/user/' . $this->encodeUrlPart($username) . '/role');
         $roles = [];
         foreach ($xml->children() as $role) {
-            /** @var \SimpleXMLElement $role */
-            $roles[] = new Role(new \SimpleXMLElement($role->asXML()), $this);
+            /** @var SimpleXMLElement $role */
+            $roles[] = new Role(new SimpleXMLElement($role->asXML()), $this);
         }
         return $roles;
     }
@@ -1111,7 +1123,9 @@ class Connection
     public function getSubsystem($project_id, $name)
     {
         return new Subsystem(
-            $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/subsystem/' . $this->encodeUrlPart($name)),
+            $this->get(
+                '/admin/project/' . $this->encodeUrlPart($project_id) . '/subsystem/' . $this->encodeUrlPart($name)
+            ),
             $this
         );
     }
@@ -1128,8 +1142,8 @@ class Connection
         $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/subsystem');
         $subsystems = [];
         foreach ($xml->children() as $subsystem) {
-            /** @var \SimpleXMLElement $subsystem */
-            $subsystems[] = new Subsystem(new \SimpleXMLElement($subsystem->asXML()), $this);
+            /** @var SimpleXMLElement $subsystem */
+            $subsystems[] = new Subsystem(new SimpleXMLElement($subsystem->asXML()), $this);
         }
         return $subsystems;
     }
@@ -1143,8 +1157,8 @@ class Connection
         $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/version?showReleased=true');
         $versions = [];
         foreach ($xml->children() as $version) {
-            /** @var \SimpleXMLElement $version */
-            $versions[] = new Version(new \SimpleXMLElement($version->asXML()), $this);
+            /** @var SimpleXMLElement $version */
+            $versions[] = new Version(new SimpleXMLElement($version->asXML()), $this);
         }
         return $versions;
     }
@@ -1157,7 +1171,9 @@ class Connection
     public function getVersion($project_id, $name)
     {
         return new Version(
-            $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/version/' . $this->encodeUrlPart($name)),
+            $this->get(
+                '/admin/project/' . $this->encodeUrlPart($project_id) . '/version/' . $this->encodeUrlPart($name)
+            ),
             $this
         );
     }
@@ -1175,8 +1191,8 @@ class Connection
         $xml = $this->get('/admin/customfield/buildBundle');
         $bundles = [];
         foreach ($xml->children() as $bundle) {
-            /** @var \SimpleXMLElement $bundle */
-            $bundles[] = new BuildBundle(new \SimpleXMLElement($bundle->asXML()), $this);
+            /** @var SimpleXMLElement $bundle */
+            $bundles[] = new BuildBundle(new SimpleXMLElement($bundle->asXML()), $this);
         }
         return $bundles;
     }
@@ -1193,8 +1209,8 @@ class Connection
         $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/build');
         $builds = [];
         foreach ($xml->children() as $build) {
-            /** @var \SimpleXMLElement $build */
-            $builds[] = new Build(new \SimpleXMLElement($build->asXML()), $this);
+            /** @var SimpleXMLElement $build */
+            $builds[] = new Build(new SimpleXMLElement($build->asXML()), $this);
         }
         return $builds;
     }
@@ -1212,8 +1228,15 @@ class Connection
      *
      * @return User[]
      */
-    public function getUsers($q = '', $group = '', $role = '', $project = '', $permission = '', $onlineOnly = false, $start = 0)
-    {
+    public function getUsers(
+        $q = '',
+        $group = '',
+        $role = '',
+        $project = '',
+        $permission = '',
+        $onlineOnly = false,
+        $start = 0
+    ) {
         $users = [];
         $q = trim((string)$q);
         $params = [
@@ -1229,8 +1252,8 @@ class Connection
         $xml = $this->get('/admin/user/?' . $this->httpBuildQuery($params));
         if (!empty($xml) && is_object($xml)) {
             foreach ($xml->children() as $user) {
-                /** @var \SimpleXMLElement $user */
-                $users[] = new User(new \SimpleXMLElement($user->asXML()), $this);
+                /** @var SimpleXMLElement $user */
+                $users[] = new User(new SimpleXMLElement($user->asXML()), $this);
             }
         }
         return $users;
@@ -1261,7 +1284,9 @@ class Connection
         ];
         $bundle_name = $this->encodeUrlPart($bundle_name);
         $build_name = $this->encodeUrlPart($build_name);
-        return $this->put("/admin/customfield/buildBundle/{$bundle_name}/{$build_name}?" . $this->httpBuildQuery($params));
+        return $this->put(
+            "/admin/customfield/buildBundle/{$bundle_name}/{$build_name}?" . $this->httpBuildQuery($params)
+        );
     }
 
     public function createBuilds()
@@ -1271,7 +1296,7 @@ class Connection
 
     /**
      * @param Project $project
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createProject(Project $project)
     {
@@ -1284,7 +1309,7 @@ class Connection
      * @param string $project_description
      * @param string $project_lead_login
      * @param int $starting_number
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createProjectDetailed(
         $project_id,
@@ -1352,7 +1377,7 @@ class Connection
     /**
      * @param string $project_id
      * @param string $name
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function deleteSubsystem($project_id, $name)
     {
@@ -1376,7 +1401,7 @@ class Connection
     /**
      * @param string $project_id
      * @param Version $version
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createVersion($project_id, Version $version)
     {
@@ -1397,7 +1422,7 @@ class Connection
      * @param string $is_archived
      * @param string $release_date
      * @param string $description
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createVersionDetailed(
         $project_id,
@@ -1416,7 +1441,9 @@ class Connection
             $params['releaseDate'] = $release_date;
         }
         return $this->put(
-            '/admin/project/' . $this->encodeUrlPart($project_id) . '/version/' . $this->encodeUrlPart($name) . '?' . $this->httpBuildQuery(
+            '/admin/project/' . $this->encodeUrlPart($project_id) . '/version/' . $this->encodeUrlPart(
+                $name
+            ) . '?' . $this->httpBuildQuery(
                 $params
             )
         );
@@ -1484,31 +1511,33 @@ class Connection
     /**
      * @link https://www.jetbrains.com/help/youtrack/incloud/Get-Issues-in-a-Project.html
      *
-     * @param string $project_id
+     * @param string $projectId
      * @param string $filter A query to search for issues.
      * @param int $after A number of issues to skip before getting a list of issues.
      * @param int $max Maximum number of issues to get.
      *
      * @return Issue[]
      */
-    public function getIssues($project_id, $filter, $after = 0, $max = 10)
+    public function getIssues($projectId, $filter, $after = 0, $max = 10)
     {
         $params = [
+            'filter' => (string)$filter,
             'after' => (string)$after,
             'max' => (string)$max,
-            'filter' => (string)$filter,
         ];
         $this->cleanUrlParameters($params);
-        $xml = $this->get('/project/issues/' . $this->encodeUrlPart($project_id) . '?' . $this->httpBuildQuery($params));
+        $xml = $this->get(
+            '/issue/byproject/' . $this->encodeUrlPart($projectId) . '?' . $this->httpBuildQuery($params)
+        );
         $issues = [];
 
-        if (!$xml instanceof \SimpleXMLElement) {
+        if (!$xml instanceof SimpleXMLElement) {
             return $issues;
         }
 
         foreach ($xml->children() as $issue) {
-            /** @var \SimpleXMLElement $issue */
-            $issues[] = new Issue(new \SimpleXMLElement($issue->asXML()), $this);
+            /** @var SimpleXMLElement $issue */
+            $issues[] = new Issue(new SimpleXMLElement($issue->asXML()), $this);
         }
         return $issues;
     }
@@ -1553,8 +1582,8 @@ class Connection
         $xml = $this->get('/issue?' . $params_string);
         $issues = [];
         foreach ($xml->children() as $issue) {
-            /** @var \SimpleXMLElement $issue */
-            $issues[] = new Issue(new \SimpleXMLElement($issue->asXML()), $this);
+            /** @var SimpleXMLElement $issue */
+            $issues[] = new Issue(new SimpleXMLElement($issue->asXML()), $this);
         }
         return $issues;
     }
@@ -1621,8 +1650,8 @@ class Connection
         $xml = $this->get('/admin/customfield/field');
         $fields = [];
         foreach ($xml->children() as $field) {
-            /** @var \SimpleXMLElement $field */
-            $fields[] = new CustomFieldPrototype(new \SimpleXMLElement($field->asXML()), $this);
+            /** @var SimpleXMLElement $field */
+            $fields[] = new CustomFieldPrototype(new SimpleXMLElement($field->asXML()), $this);
         }
         return $fields;
     }
@@ -1692,7 +1721,13 @@ class Connection
         }
 
         return new $className(
-            $this->get(sprintf('/admin/customfield/%s/%s', $this->encodeUrlPart($bundlePath), $this->encodeUrlPart($bundle_name))),
+            $this->get(
+                sprintf(
+                    '/admin/customfield/%s/%s',
+                    $this->encodeUrlPart($bundlePath),
+                    $this->encodeUrlPart($bundle_name)
+                )
+            ),
             $this
         );
     }
@@ -1721,7 +1756,7 @@ class Connection
 
     /**
      * @param EnumBundle $bundle
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createEnumBundle(EnumBundle $bundle)
     {
@@ -1743,11 +1778,13 @@ class Connection
     /**
      * @param string $name
      * @param string $value
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function addValueToEnumBundle($name, $value)
     {
-        return $this->put('/admin/customfield/bundle/' . $this->encodeUrlPart($name) . '/' . $this->encodeUrlPart($value));
+        return $this->put(
+            '/admin/customfield/bundle/' . $this->encodeUrlPart($name) . '/' . $this->encodeUrlPart($value)
+        );
     }
 
     /**
@@ -1785,7 +1822,9 @@ class Connection
      */
     public function getProjectCustomField($project_id, $name)
     {
-        $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/customfield/' . $this->encodeUrlPart($name));
+        $xml = $this->get(
+            '/admin/project/' . $this->encodeUrlPart($project_id) . '/customfield/' . $this->encodeUrlPart($name)
+        );
 
         return new CustomField(
             $xml,
@@ -1802,8 +1841,8 @@ class Connection
         $xml = $this->get('/admin/project/' . $this->encodeUrlPart($project_id) . '/customfield');
         $fields = [];
         foreach ($xml->children() as $cfield) {
-            /** @var \SimpleXMLElement $cfield */
-            $fields[] = new CustomField(new \SimpleXMLElement($cfield->asXML()), $this);
+            /** @var SimpleXMLElement $cfield */
+            $fields[] = new CustomField(new SimpleXMLElement($cfield->asXML()), $this);
         }
         return $fields;
     }
@@ -1811,7 +1850,7 @@ class Connection
     /**
      * @param string $project_id
      * @param CustomField $pcf
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createProjectCustomField($project_id, CustomField $pcf)
     {
@@ -1823,7 +1862,7 @@ class Connection
      * @param string $name
      * @param string $empty_field_text
      * @param array $params
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     private function createProjectCustomFieldDetailed($project_id, $name, $empty_field_text, $params = [])
     {
@@ -1847,8 +1886,8 @@ class Connection
         $xml = $this->get('/admin/issueLinkType');
         $lts = [];
         foreach ($xml->children() as $node) {
-            /** @var \SimpleXMLElement $node */
-            $lts[] = new IssueLinkType(new \SimpleXMLElement($node->asXML()), $this);
+            /** @var SimpleXMLElement $node */
+            $lts[] = new IssueLinkType(new SimpleXMLElement($node->asXML()), $this);
         }
         return $lts;
     }
@@ -1865,7 +1904,7 @@ class Connection
 
     /**
      * @param IssueLinkType $ilt
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createIssueLinkType(IssueLinkType $ilt)
     {
@@ -1877,7 +1916,7 @@ class Connection
      * @param string $outward_name
      * @param string $inward_name
      * @param string $directed
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function createIssueLinkTypeDetailed($name, $outward_name, $inward_name, $directed)
     {
@@ -2007,8 +2046,8 @@ class Connection
         $xml = $this->requestXml('GET', '/admin/agile');
         $boards = [];
         foreach ($xml->children() as $board) {
-            /** @var \SimpleXMLElement $board */
-            $boards[] = new AgileSetting(new \SimpleXMLElement($board->asXML()), $this);
+            /** @var SimpleXMLElement $board */
+            $boards[] = new AgileSetting(new SimpleXMLElement($board->asXML()), $this);
         }
         return $boards;
     }
@@ -2018,12 +2057,15 @@ class Connection
      *
      * @param string $boardId Identifier of the agile board, for which you want to get the sprint.
      * @param string $sprintId Identifier of the sprint you want to get.
-     * @see https://www.jetbrains.com/help/youtrack/incloud/Get-Sprint-by-ID.html
      * @return Sprint
+     * @see https://www.jetbrains.com/help/youtrack/incloud/Get-Sprint-by-ID.html
      */
     public function getSprintById($boardId, $sprintId)
     {
-        $xml = $this->requestXml('GET', '/admin/agile/' . $this->encodeUrlPart($boardId) . '/sprint/' . $this->encodeUrlPart($sprintId));
+        $xml = $this->requestXml(
+            'GET',
+            '/admin/agile/' . $this->encodeUrlPart($boardId) . '/sprint/' . $this->encodeUrlPart($sprintId)
+        );
         return new Sprint($xml, $this);
     }
 
@@ -2033,7 +2075,7 @@ class Connection
      * @link https://www.jetbrains.com/help/youtrack/incloud/Update-Agile-Configuration.html
      * @param string $agileId Id of agile configuration that should be updated
      * @param string $xml
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function updateAgile($agileId, $xml)
     {
@@ -2061,7 +2103,7 @@ class Connection
      *
      * @param string $issueId
      * @param array $workItems
-     * @return \SimpleXMLElement|null
+     * @return SimpleXMLElement|null
      */
     public function importWorkitems($issueId, $workItems)
     {
@@ -2118,7 +2160,10 @@ class Connection
      */
     public function deleteWorkitem($issueId, $workitemId)
     {
-        $result = $this->request('DELETE', '/issue/' . $this->encodeUrlPart($issueId) . '/timetracking/workitem/' . $this->encodeUrlPart($workitemId));
+        $result = $this->request(
+            'DELETE',
+            '/issue/' . $this->encodeUrlPart($issueId) . '/timetracking/workitem/' . $this->encodeUrlPart($workitemId)
+        );
         return $result['response']['http_code'] === 200;
     }
 
