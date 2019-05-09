@@ -1,5 +1,16 @@
 # Changelog
 
+### 2019-05-09 - v1.8.0
+
+YouTrack is changing the legacy API and dropping support. This will stop some functionality from working.
+Maybe it's time to re-create the whole library. Some support work will still be done for this project.
+
+* Fixed #60
+* Fixed #59
+* Fixed #57
+* Fixed #56
+* Fixed #55
+
 ### 2018-05-14 - v1.7.9
 
 * Fixed #53 - Improved URL parameter handling with proper and unified encoding - Thanks [@zrino](https://github.com/zrino)
