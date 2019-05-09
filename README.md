@@ -109,7 +109,7 @@ class ExampleController extends AbstractActionController
 
 Run the following commands to install composer and youtrack-client.
 
-```bash
+```sh
 mkdir my-youtrack-project
 cd my-youtrack-project
 
@@ -120,7 +120,6 @@ php -r "unlink('composer-setup.php');"
 
 php composer.phar require nepda/youtrack-client
 ```
-
 (Please checkout the [latest composer setup on their page](https://getcomposer.org/download/))
 
 Create a `./my-youtrack-project/client.php` file with content:
@@ -146,20 +145,27 @@ try {
 }
 ```
 
+    $issue = $youtrack->getIssue('TEST-123');
+    // Now you can work with the issue or other $youtrack methods
+} catch (\YouTrack\IncorrectLoginException $e) {
+    echo 'Incorrect login or password.' . PHP_EOL;
+}
+```
+
 With this simple setup you're ready to go.
 
 ## Tests
 
 The testsuite depends on PHPUnit. You can install it with `composer.phar`:
 
-```bash
+```sh
 curl -sS https://getcomposer.org/installer | php --
 php composer.phar install
 ```
 
 The unit tests are incomplete but you can run them using `phpunit` like this:
 
-```bash
+```sh
 ./vendor/bin/phpunit ./test
 ```
 
