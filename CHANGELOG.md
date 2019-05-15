@@ -1,8 +1,13 @@
 # Changelog
 
-### 2019-05-15 - v1.8.1
+### 2019-05-15 - v1.8.2
 
 * Fixed #62 - Docs improved for setUrl in attachment - Thanks [@ArtemGoutsoul](https://github.com/ArtemGoutsoul)
+
+### 2019-05-15 - v1.8.1
+
+* Library updates
+* Merged #61
 
 ### 2019-05-09 - v1.8.0
 
