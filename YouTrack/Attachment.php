@@ -55,7 +55,11 @@ class Attachment extends BaseObject
     /**
      * Sets the url
      *
-     * @param string $url
+     * You can pass a array as $url and provide more information about the file.
+     *
+     * e.g.: `$url = ['filename' => $filename, 'file' => $filepath];`
+     *
+     * @param string|array $url
      * @return Attachment
      * @see getUrl
      * @see $url
