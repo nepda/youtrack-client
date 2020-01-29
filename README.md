@@ -9,7 +9,7 @@ May be I'll create a new version of this library for the new API.
 [![Packagist](https://img.shields.io/packagist/v/nepda/youtrack-client.svg)](https://packagist.org/packages/nepda/youtrack-client)
 
 The bugtracker [YouTrack](http://www.jetbrains.com/youtrack/) provides a
-[REST-API](https://www.jetbrains.com/help/youtrack/incloud/YouTrack-REST-API-Reference.html).
+[REST-API](https://www.jetbrains.com/help/youtrack/incloud/youtrack-rest-api-reference.html).
 Because a lot of web applications are written in [PHP](http://php.net) I decided to write a client library for it.
 To make it easier for developers to write connectors to YouTrack.
 
