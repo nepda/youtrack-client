@@ -275,6 +275,8 @@ class Connection
 
         $headers[CURLOPT_HTTPHEADER] = array_merge($headers[CURLOPT_HTTPHEADER], $additionalHeaders);
 
+        curl_setopt($this->http, CURLOPT_FOLLOWLOCATION, true);
+        
         switch ($method) {
             case 'GET':
                 curl_setopt($this->http, CURLOPT_HTTPGET, true);
