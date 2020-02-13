@@ -124,7 +124,7 @@ class Issue extends BaseObject
         foreach ($xml->children() as $nodeName => $node) {
             /** @var \SimpleXMLElement $node */
             if ($nodeName == 'comment') {
-                $this->comments[] = new Comment(new \SimpleXMLElement($node->asXML()));
+                $this->comments[] = new Comment(new \SimpleXMLElement($node->asXML()), $this->youtrack);
                 continue;
             }
             foreach ($node->attributes() as $key => $value) {
