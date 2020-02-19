@@ -1,5 +1,14 @@
 # Changelog
 
+### 2020-02-19 - v1.8.4
+
+* Pull #65 - Fix creating comment for issue on its load (Fatal error) - Thanks [@alek13](https://github.com/alek13)
+* Added Travis build for PHP 7.4
+
+### 2020-01-29 - v1.8.3
+
+* Merge pull request #63 from wangda8791/master bug fix: Attachment/fetchContent gives 302
+
 ### 2019-05-15 - v1.8.2
 
 * Fixed #62 - Docs improved for setUrl in attachment - Thanks [@ArtemGoutsoul](https://github.com/ArtemGoutsoul)
