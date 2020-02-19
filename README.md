@@ -20,7 +20,7 @@ The source of this library is released under the BSD license (see LICENSE for de
 
 ## Requirements
 
-* PHP >= 5.4 (Tested with >= 5.6, Travis runs tests with ~~5.4, 5.5~~, 5.6, 7.0, 7.1, 7.2 and 7.3)
+* PHP >= 5.4 (Tested with >= 5.6, Travis runs tests with ~~5.4, 5.5~~, 5.6, 7.0, 7.1, 7.2, 7.3 and 7.4)
 * curl
 * simplexml
 * json
