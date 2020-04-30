@@ -1,10 +1,13 @@
 <?php
-namespace YouTrack;
+namespace YouTrack\Test;
+
+use YouTrack\OwnedField;
+use YouTrack\OwnedFieldBundle;
 
 class OwnedFieldBundleTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $filename = 'test/testdata/owned_field_bundle.xml';
+    private $filename = __DIR__  . '/testdata/owned_field_bundle.xml';
 
     public function testGetOwnedFieldBundleElements()
     {

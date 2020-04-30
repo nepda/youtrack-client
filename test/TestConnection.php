@@ -1,6 +1,8 @@
 <?php
 
-namespace YouTrack;
+namespace YouTrack\Test;
+
+use YouTrack\Connection;
 
 /**
  * A helper class for connection testing.

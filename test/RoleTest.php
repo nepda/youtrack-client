@@ -1,7 +1,8 @@
 <?php
-namespace YouTrack;
+namespace YouTrack\Test;
 
-require_once 'requirements.php';
+
+use YouTrack\Role;
 
 /**
  * Class RoleTest
@@ -11,8 +12,8 @@ require_once 'requirements.php';
 class RoleTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $rolePlainFile = 'test/testdata/role-plain.xml';
-    private $roleProjectFile = 'test/testdata/role-project-ref.xml';
+    private $rolePlainFile = __DIR__  . '/testdata/role-plain.xml';
+    private $roleProjectFile = __DIR__  . '/testdata/role-project-ref.xml';
 
     public function testCreatePlainRole()
     {

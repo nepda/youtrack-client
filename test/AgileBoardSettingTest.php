@@ -1,8 +1,8 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
-require_once 'testconnection.php';
 
+namespace YouTrack\Test;
+
+use YouTrack\AgileSetting;
 
 /**
  * Unit test for the youtrack agile board settings class.
@@ -12,7 +12,7 @@ require_once 'testconnection.php';
 class AgileBoardSettingTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $singleAgileSettingFile = 'test/testdata/agile-boards.xml';
+    private $singleAgileSettingFile = __DIR__ . '/testdata/agile-boards.xml';
 
     public function testCanCreateSimpleAgileSetting()
     {

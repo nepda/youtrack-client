@@ -13,8 +13,13 @@
     }
   ],
   "autoload": {
-    "psr-0": {
-      "YouTrack\\": "./"
+    "psr-4": {
+      "YouTrack\\": "YouTrack/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "YouTrack\\Test\\": "test/"
     }
   },
   "require": {

@@ -1,5 +1,6 @@
 <?php
-namespace YouTrack;
+
+namespace YouTrack\Test;
 
 class AutoloadingTest extends \PHPUnit_Framework_TestCase
 {

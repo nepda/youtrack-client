@@ -1,6 +1,5 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
+namespace YouTrack\Test;
 
 use YouTrack\Exception as YouTrackException;
 
@@ -19,7 +18,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
             'http_code' => 200,
         ];
         $content = '';
-        $e = new Exception($url, $response, $content);
+        $e = new YouTrackException($url, $response, $content);
         $this->assertEquals("Error for 'http://example.com': 200", $e->getMessage());
     }
 
@@ -30,7 +29,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
             'http_code' => 404,
         ];
         $content = '';
-        $e = new Exception($url, $response, $content);
+        $e = new YouTrackException($url, $response, $content);
         $this->assertEquals("Error for 'http://example.com': 404", $e->getMessage());
     }
 
@@ -42,7 +41,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
             'content_type' => 'text/html; charset=utf8',
         ];
         $content = '';
-        $e = new Exception($url, $response, $content);
+        $e = new YouTrackException($url, $response, $content);
         $this->assertEquals("Error for 'http://example.com': 500", $e->getMessage());
     }
 

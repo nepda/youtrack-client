@@ -1,6 +1,7 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
+namespace YouTrack\Test;
+
+use YouTrack\Version;
 
 /**
  * Unit test for the YouTrack Version class.
@@ -11,7 +12,7 @@ require_once 'requirements.php';
 class VersionTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $filename = 'test/testdata/version.xml';
+    private $filename = __DIR__  . '/testdata/version.xml';
 
     public function testName()
     {

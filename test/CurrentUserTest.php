@@ -1,6 +1,7 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
+namespace YouTrack\Test;
+
+use YouTrack\CurrentUser;
 
 /**
  * Unit test for fetching current user.
@@ -9,7 +10,7 @@ require_once 'requirements.php';
  */
 class CurrentUserTest extends \PHPUnit_Framework_TestCase
 {
-    private $filename = 'test/testdata/currentuser.xml';
+    private $filename = __DIR__  . '/testdata/currentuser.xml';
 
     public function testConstruct()
     {

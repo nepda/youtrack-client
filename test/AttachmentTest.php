@@ -1,18 +1,18 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
-require_once 'testconnection.php';
 
+namespace YouTrack\Test;
+
+use YouTrack\Attachment;
 
 /**
  * Unit test for the youtrack attachment class.
  *
  * @author Nepomuk Fraedrich <info@nepda.eu>
  */
-class AttachmentsTest extends \PHPUnit_Framework_TestCase
+class AttachmentTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $singleAttachmentFile = 'test/testdata/attachment.xml';
+    private $singleAttachmentFile = __DIR__ . '/testdata/attachment.xml';
 
     public function testCanCreateSimpleAttachment()
     {
@@ -99,12 +99,12 @@ class AttachmentsTest extends \PHPUnit_Framework_TestCase
     {
         $attachment = $this->createAttachment();
 
-        $expectedResult = unserialize(file_get_contents('test/testdata/request-response-create-attachment-serialized.txt'));
+        $expectedResult = unserialize(file_get_contents(__DIR__ . '/testdata/request-response-create-attachment-serialized.txt'));
 
         /**
          * @var \YouTrack\Connection $youtrack
          */
-        $youtrackBuilder = $this->getMockBuilder('\\YouTrack\\TestConnection');
+        $youtrackBuilder = $this->getMockBuilder('YouTrack\\Test\\TestConnection');
         $youtrackBuilder->setMethods(['request']);
         $youtrack = $youtrackBuilder->getMock();
 
@@ -141,7 +141,7 @@ class AttachmentsTest extends \PHPUnit_Framework_TestCase
         $expectedUrl = '/issue/' . rawurlencode($issueId) . '/attachment?' . http_build_query($params);
         $expectedResult = 'myResponseValue';
 
-        $youtrackBuilder = $this->getMockBuilder('\\YouTrack\\TestConnection');
+        $youtrackBuilder = $this->getMockBuilder('YouTrack\\Test\\TestConnection');
         $youtrackBuilder->setMethods(['request']);
         $youtrack = $youtrackBuilder->getMock();
 
@@ -158,7 +158,7 @@ class AttachmentsTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateAttachmentThrowsExceptionOnNonExistingFile()
     {
-        $youtrackBuilder = $this->getMockBuilder('\\YouTrack\\TestConnection');
+        $youtrackBuilder = $this->getMockBuilder('YouTrack\\Test\\TestConnection');
         $youtrackBuilder->setMethods(['request']);
         $youtrack = $youtrackBuilder->getMock();
 

@@ -1,8 +1,6 @@
 <?php
 
-namespace YouTrack;
-require_once 'requirements.php';
-require_once 'testconnection.php';
+namespace YouTrack\Test;
 
 /**
  * Unit test for the connection class.
@@ -16,16 +14,16 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testCreateConnection()
     {
         $con = new TestConnection();
-        $this->assertInstanceOf('\YouTrack\TestConnection', $con);
+        $this->assertInstanceOf('YouTrack\Test\TestConnection', $con);
     }
 
     public function testIncorrectLoginThrowsException()
     {
         $con = new TestConnection();
-        $refl = new \ReflectionClass('\YouTrack\TestConnection');
+        $refl = new \ReflectionClass('YouTrack\Test\TestConnection');
         $method = $refl->getMethod('handleLoginResponse');
         $method->setAccessible(true);
-        $content = file_get_contents('test/testdata/incorrect-login.http');
+        $content = file_get_contents(__DIR__ . '/testdata/incorrect-login.http');
         $response = [
             'http_code' => 403
         ];

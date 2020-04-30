@@ -1,6 +1,8 @@
 <?php
-namespace YouTrack;
-require_once 'requirements.php';
+namespace YouTrack\Test;
+
+use YouTrack\User;
+use YouTrack\Workitem;
 
 /**
  * Unit test for the youtrack workitem class.
@@ -9,7 +11,7 @@ require_once 'requirements.php';
  */
 class WorkitemTest extends \PHPUnit_Framework_TestCase
 {
-    private $filename = 'test/testdata/workitem.xml';
+    private $filename = __DIR__  . '/testdata/workitem.xml';
 
     public function testConstruct01()
     {
