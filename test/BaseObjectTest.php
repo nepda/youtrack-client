@@ -1,7 +1,7 @@
 <?php
-namespace YouTrack;
+namespace YouTrack\Test;
 
-require_once 'requirements.php';
+use YouTrack\BaseObject;
 
 /**
  * Unit test for the youtrack object class.
@@ -12,7 +12,7 @@ require_once 'requirements.php';
 class BaseObjectTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $filename = 'test/testdata/issue.xml';
+    private $filename = __DIR__ . '/testdata/issue.xml';
 
     public function testConstruct01()
     {
